@@ -15,8 +15,8 @@
 
 4.Publish message from Scalenics
 
-*Login Scalenics Management Console
-*Go to 'Publish' menu
-*Publish message to DB410c.
+* Login Scalenics Management Console
+* Go to 'Publish' menu
+* Publish message to DB410c.
 
 5.Have fun!!
