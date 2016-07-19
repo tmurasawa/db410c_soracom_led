@@ -3,7 +3,8 @@
 import time
 from gpio_96boards import GPIO
 import paho.mqtt.client as mqtt
-
+	
+# GPIO_A is D_A on Mezzanine
 GPIO_A = GPIO.gpio_id('GPIO_A')
 pins = (
     (GPIO_A, 'out'),
@@ -11,7 +12,10 @@ pins = (
 
 def on_connect(client, userdata, rc):
   print("Connected with result code " + str(rc))
-  client.subscribe("16755F158AC56C21BBEDB8E019A4517E/440103072674825/subscribe")
+	#if you use Scalenics WITHOUT SORACOM,comment out below..
+  #client.subscribe("<DEVICE_TOKEN>/<DEVICE_ID>/subscribe")
+	#if you use Scalenics WITH SORACOM,comment out below..
+  client.subscribe(topic)
 
 def on_disconnect(client, userdata, rc):
   if rc != 0:
@@ -34,20 +38,28 @@ def on_message(client, userdata, msg):
 
 
 def led_on(gpio):
-        gpio.digital_write(GPIO_A, GPIO.HIGH)
+	gpio.digital_write(GPIO_A, GPIO.HIGH)
 
 def led_off(gpio):
-        gpio.digital_write(GPIO_A, GPIO.LOW)
+	gpio.digital_write(GPIO_A, GPIO.LOW)
 
 
-print "- Init.."
+print "-- Get metadata from SORACOM..."
 
 
 import json
 import requests
 
-#device_token=requests.get('http://metadata.soracom.io/v1/userdata').text
-#print device_token
+metadata=requests.get('http://metadata.soracom.io/v1/subscriber').json()
+#print metadata
+imsi=metadata["imsi"]
+print "imsi:%s" %imsi
+
+device_token=requests.get('http://metadata.soracom.io/v1/userdata').text
+print "device_token:%s" %device_token
+
+topic = device_token + "/" + imsi + "/subscribe"
+print "MQTT topic:%s" %topic
 
 if __name__ == '__main__':
 
@@ -57,9 +69,11 @@ if __name__ == '__main__':
  client.on_publish = on_publish
  client.on_message = on_message
 
- client.username_pw_set("SC000014","16755F158AC56C21BBEDB8E019A4517E")
- #client.connect("beam.soracom.io", 1883, 10)
- client.connect("api.scalenics.io", 1883, 10)
+ ## if you use Scalenics WITHOUT SORACOM,comment out below..
+ #client.username_pw_set("<SCALENICS_ID>","<DEVICE_TOKEN>")
+ #client.connect("api.scalenics.io", 1883, 10)
+ ## if you use Scalenics WITH SORACOM,comment out below..
+ client.connect("beam.soracom.io", 1883, 10)
  client.loop_forever()
 
 
