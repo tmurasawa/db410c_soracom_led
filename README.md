@@ -1,4 +1,4 @@
-# DB410c MQTT publish on Scalenics w/SORACOM
+# DB410c MQTT subscribe on Scalenics w/SORACOM
 
 1.Install python-pip and paho-mqtt
 
